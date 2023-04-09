@@ -1,8 +1,10 @@
 package com.example.articles;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,5 +43,32 @@ public class Articles {
         }
         return "";
     }
+
+    @GetMapping("/articles")
+    public Collection<String> getArticles() {
+        return articles.values();
+    }
+
+    @PostMapping("/articles")
+    public ResponseIdHolder postArticle(@RequestBody @Validated Article article) {
+        var response = new ResponseIdHolder();
+        response.setKey(articles.size());
+        articles.put(response.getKey(), article.getArticle());
+        return response;
+
+    }
+
+    @PutMapping("/articles")
+    public String putArticleByKey(@RequestBody ResponseIdHolder key, Article article) {
+        articles.put(key.getKey(), article.getArticle());
+        return articles.toString();
+    }
+
+    @DeleteMapping("/articles{key}")
+    public void deleteArticleByKey(@PathVariable ResponseIdHolder key) {
+        articles.remove(key.getKey());
+    }
+
+
 
 }
